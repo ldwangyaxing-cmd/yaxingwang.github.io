@@ -7,7 +7,7 @@
 
 # Site Settings
 title                    : "Yaxing Wang"
-description              : "GAN, Diffusion"
+description              : "GAN, Diffusion Model"
 repository               : "yaxingwang/yaxingwang.github.io"
 google_scholar_stats_use_cdn : true
 
@@ -23,12 +23,12 @@ baidu_site_verification  :  # get baidu_site_verification from https://ziyuan.ba
 author:
   name             : "Yaxing Wang (王亚星)"
   avatar           : "images/icon.jpg"
-  bio              : "Nankai University"
-  location         : "Tianjin, China"
+  bio              : "Jilin University"
+  location         : "Changchun, China"
   employer         : #"Nankai University"
   pubmed           : 
   googlescholar    : "https://scholar.google.com/citations?user=6CsB8k0AAAAJ&hl=en"
-  email            : "yaxing@nankai.edu.cn"
+  email            : "yaxing@jlu.edu.cn"
   researchgate     : 
   uri              : 
   bitbucket        :
