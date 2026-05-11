@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}任务提交系统{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="container nav-container">
+      <a class="nav-brand" href="{{ url_for('index') }}">&#128221; 任务提交系统</a>
+      <div class="nav-links">
+        {% if session.get('is_teacher') %}
+          <a href="{{ url_for('teacher_dashboard') }}">任务管理</a>
+          <a href="{{ url_for('teacher_settings') }}">修改密码</a>
+          <span class="nav-user">教师：{{ session.teacher_name }}</span>
+          <a href="{{ url_for('logout') }}" class="btn btn-sm btn-outline">退出</a>
+        {% elif session.get('student_name') %}
+          <a href="{{ url_for('student_tasks') }}">任务列表</a>
+          <a href="{{ url_for('my_submissions') }}">我的提交</a>
+          <span class="nav-user">{{ session.student_name }}</span>
+          <a href="{{ url_for('logout') }}" class="btn btn-sm btn-outline">退出</a>
+        {% else %}
+          <a href="{{ url_for('login') }}">教师登录</a>
+          <a href="{{ url_for('student_login') }}">学生入口</a>
+        {% endif %}
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>任务提交系统 &copy; {{ now().year if now is defined else 2026 }}</p>
+    </div>
+  </footer>
+</body>
+</html>

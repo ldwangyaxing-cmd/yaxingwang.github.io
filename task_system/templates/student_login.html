@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}学生入口{% endblock %}
+{% block content %}
+<div class="form-page">
+  <div class="form-card">
+    <h2>学生入口</h2>
+    <form method="POST" action="{{ url_for('student_login') }}">
+      <div class="form-group">
+        <label for="student_name">你的姓名</label>
+        <input type="text" id="student_name" name="student_name" required placeholder="请输入你的姓名" autofocus>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">进入</button>
+    </form>
+    <p class="form-hint">输入姓名即可查看和提交任务</p>
+  </div>
+</div>
+{% endblock %}

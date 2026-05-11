@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}提交列表 - {{ task.title }}{% endblock %}
+{% block content %}
+<div class="page-header">
+  <div>
+    <h2>{{ task.title }}</h2>
+    <p class="text-muted">{{ task.description }}</p>
+  </div>
+  <a href="{{ url_for('teacher_dashboard') }}" class="btn btn-outline">返回</a>
+</div>
+
+{% if submissions %}
+<div class="submissions-list">
+  {% for sub in submissions %}
+  <div class="submission-card">
+    <div class="submission-header">
+      <div>
+        <strong>{{ sub.student_name }}</strong>
+        <span class="text-muted">提交于 {{ sub.submitted_at }}</span>
+      </div>
+      <span class="badge {{ 'badge-warning' if sub.review_status == 'pending' else ('badge-success' if sub.review_status == 'approved' else 'badge-danger') }}">
+        {{ '待审核' if sub.review_status == 'pending' else ('已通过' if sub.review_status == 'approved' else '需修改') }}
+      </span>
+    </div>
+
+    {% if sub.content %}
+    <div class="submission-content">
+      <pre>{{ sub.content }}</pre>
+    </div>
+    {% endif %}
+
+    {% if sub.file_name %}
+    <div class="submission-file">
+      <a href="{{ url_for('download_file', sub_id=sub.id) }}" class="btn btn-sm btn-info">
+        &#128206; {{ sub.file_name }}
+      </a>
+    </div>
+    {% endif %}
+
+    <div class="review-form">
+      <form method="POST" action="{{ url_for('review_submission', sub_id=sub.id) }}">
+        <div class="review-row">
+          <select name="review_status" class="form-select">
+            <option value="pending" {{ 'selected' if sub.review_status == 'pending' }}>待审核</option>
+            <option value="approved" {{ 'selected' if sub.review_status == 'approved' }}>通过</option>
+            <option value="rejected" {{ 'selected' if sub.review_status == 'rejected' }}>需修改</option>
+          </select>
+          <input type="text" name="review_comment" placeholder="评语（可选）"
+                 value="{{ sub.review_comment or '' }}" class="form-input-inline">
+          <button type="submit" class="btn btn-sm btn-primary">保存</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+  <p>该任务暂无提交</p>
+</div>
+{% endif %}
+{% endblock %}
