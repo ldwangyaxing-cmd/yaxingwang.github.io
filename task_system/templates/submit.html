@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>提交任务</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;display:flex;align-items:center;justify-content:center;color:#fff;padding:20px}
+
+.card{background:rgba(255,255,255,.12);backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.2);border-radius:24px;padding:40px 30px;width:100%;max-width:400px;text-align:center}
+.card h1{font-size:1.6rem;margin-bottom:8px}
+.task-display{background:rgba(255,255,255,.1);border-radius:14px;padding:18px;margin:16px 0 24px;font-size:1.1rem;min-height:60px;line-height:1.6;word-break:break-word}
+.no-task{color:rgba(255,255,255,.5);font-size:1rem}
+
+.input-group{margin-bottom:20px;text-align:left}
+.input-group label{display:block;font-size:.9rem;margin-bottom:6px;opacity:.8}
+.input-group input{width:100%;padding:14px 18px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);border-radius:12px;font-size:1.1rem;color:#fff;outline:none;transition:all .3s}
+.input-group input::placeholder{color:rgba(255,255,255,.4)}
+.input-group input:focus{border-color:rgba(255,255,255,.6);background:rgba(255,255,255,.15)}
+
+.submit-btn{width:100%;padding:16px;border:none;border-radius:14px;font-size:1.2rem;font-weight:700;cursor:pointer;transition:all .3s;background:linear-gradient(135deg,#f093fb,#f5576c);color:#fff;box-shadow:0 8px 20px rgba(240,147,251,.3)}
+.submit-btn:hover{transform:translateY(-2px);box-shadow:0 12px 28px rgba(240,147,251,.4)}
+.submit-btn:active{transform:translateY(0)}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* Success state */
+.success-view{display:none;text-align:center}
+.success-view.show{display:block}
+.form-view.hide{display:none}
+.success-animal{font-size:5rem;animation:bounce 1s ease-in-out infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+.success-msg{font-size:1.8rem;font-weight:800;margin:16px 0 8px;background:linear-gradient(90deg,#ffd200,#f5576c);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.success-rank{font-size:1.2rem;opacity:.8}
+
+/* Confetti */
+.confetti{position:fixed;top:-10px;z-index:25;pointer-events:none;animation:confetti-fall 3s linear forwards}
+@keyframes confetti-fall{0%{transform:translateY(0) rotate(0);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+
+.error-msg{background:rgba(239,68,68,.2);border:1px solid rgba(239,68,68,.4);border-radius:10px;padding:10px;margin-bottom:16px;font-size:.9rem;display:none}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h1>📱 提交任务</h1>
+
+  <div class="task-display" id="taskDisplay">
+    {% if task.active %}
+      {{ task.title }}
+    {% else %}
+      <span class="no-task">暂无任务，请等待教师发布</span>
+    {% endif %}
+  </div>
+
+  <div class="form-view" id="formView">
+    <div class="error-msg" id="errorMsg"></div>
+    <div class="input-group">
+      <label>你的姓名</label>
+      <input type="text" id="nameInput" placeholder="请输入姓名" autofocus>
+    </div>
+    <button class="submit-btn" id="submitBtn" onclick="doSubmit()">
+      🎉 我完成了！
+    </button>
+  </div>
+
+  <div class="success-view" id="successView">
+    <div class="success-animal" id="successAnimal"></div>
+    <div class="success-msg" id="successName"></div>
+    <div class="success-rank" id="successRank"></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
+<script>
+const socket = io();
+
+socket.on('task_updated', data => {
+  const d = document.getElementById('taskDisplay');
+  if(data.title && data.active){
+    d.innerHTML = data.title;
+    document.getElementById('formView').classList.remove('hide');
+    document.getElementById('successView').classList.remove('show');
+  } else if(data.title) {
+    d.innerHTML = data.title + '<br><small style="opacity:.5">任务已结束</small>';
+  } else {
+    d.innerHTML = '<span class="no-task">暂无任务，请等待教师发布</span>';
+  }
+});
+
+socket.on('submit_result', data => {
+  if(data.ok){
+    document.getElementById('formView').classList.add('hide');
+    const sv = document.getElementById('successView');
+    sv.classList.add('show');
+    document.getElementById('successAnimal').textContent = data.animal;
+    document.getElementById('successName').textContent = document.getElementById('nameInput').value;
+    const medal = data.rank===1?'🥇 第1名！':data.rank===2?'🥈 第2名！':data.rank===3?'🥉 第3名！':`第${data.rank}名`;
+    document.getElementById('successRank').textContent = medal;
+    spawnConfetti();
+  } else {
+    const e = document.getElementById('errorMsg');
+    e.textContent = data.msg;
+    e.style.display = 'block';
+    document.getElementById('submitBtn').disabled = false;
+    setTimeout(()=>{e.style.display='none'},3000);
+  }
+});
+
+function doSubmit(){
+  const name = document.getElementById('nameInput').value.trim();
+  if(!name){
+    const e=document.getElementById('errorMsg');
+    e.textContent='请输入姓名';e.style.display='block';
+    setTimeout(()=>{e.style.display='none'},2000);
+    return;
+  }
+  document.getElementById('submitBtn').disabled = true;
+  socket.emit('student_submit', {name});
+}
+
+document.getElementById('nameInput').addEventListener('keydown', e => {
+  if(e.key === 'Enter') doSubmit();
+});
+
+function spawnConfetti(){
+  const colors=['#f093fb','#f5576c','#ffd200','#43e97b','#38f9d7','#667eea'];
+  for(let i=0;i<30;i++){
+    const c=document.createElement('div');
+    c.className='confetti';
+    const size=Math.random()*8+5;
+    c.style.cssText=`left:${Math.random()*100}%;width:${size}px;height:${size*.6}px;background:${colors[i%colors.length]};border-radius:2px;animation-delay:${Math.random()*.5}s`;
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),4000);
+  }
+}
+</script>
+</body>
+</html>
