@@ -134,7 +134,7 @@ function clearSubs(){
   if(confirm('确定清空所有提交？'))socket.emit('clear_submissions');
 }
 function toggleRemoteMusic(){
-  socket.emit('toggle_music',{playing:true});
+  socket.emit('toggle_music');
 }
 
 socket.on('task_updated',data=>{updateStatus(data.active)});

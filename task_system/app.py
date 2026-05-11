@@ -103,8 +103,8 @@ def handle_submit(data):
 
 
 @socketio.on("toggle_music")
-def handle_toggle_music(data):
-    emit("music_toggle", data, broadcast=True)
+def handle_toggle_music():
+    emit("music_toggle", broadcast=True)
 
 
 if __name__ == "__main__":
