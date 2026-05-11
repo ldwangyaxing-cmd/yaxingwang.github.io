@@ -1,80 +1,49 @@
-# 在线任务提交系统
+# 课堂实时任务系统
 
-一个轻量级的在线任务提交与审核系统，教师发布任务，学生在线提交，教师审核反馈。
+一个有趣的课堂互动系统：教师发布任务，学生完成后实时提交，大屏展示动画效果。
 
-## 功能
+## 功能亮点
 
-- **教师端**
-  - 创建、编辑、关闭/开放、删除任务
-  - 设置任务截止日期
-  - 查看所有学生提交
-  - 对提交进行审核（通过 / 需修改）并给出评语
-  - 修改登录密码
+- **投屏展示页**：星空背景 + 气球飞升 + 彩纸飘落 + 排名塔，适合教室大屏投影
+- **实时更新**：学生提交后，投屏页立刻显示动画和排名，基于 WebSocket
+- **音乐和音效**：内置 Web Audio 合成的轻快背景音乐和提交音效
+- **趣味装饰**：可爱动物 emoji、金银铜奖牌、弹出通知
+- **学生无需注册**：输入姓名即可提交
+- **教师控制台**：发布/关闭任务、清空提交、远程控制音乐
 
-- **学生端**
-  - 查看所有开放任务
-  - 提交文字内容或上传文件（支持多种格式，最大 50MB）
-  - 查看自己的提交记录和教师评审结果
+## 三个页面
+
+| 页面 | 地址 | 用途 |
+|------|------|------|
+| 首页 | `/` | 入口导航 |
+| 投屏展示 | `/display` | 教室大屏展示，有动画和音乐 |
+| 学生提交 | `/submit` | 学生手机/电脑上打开，提交任务 |
+| 教师控制台 | `/teacher` | 发布任务、查看提交 |
 
 ## 快速开始
 
-### 1. 安装依赖
-
 ```bash
+cd task_system
+python3 -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
-```
-
-### 2. 启动服务
-
-```bash
 python3 app.py
 ```
 
-服务默认运行在 `http://localhost:5000`。
+服务运行在 `http://0.0.0.0:5000`。
 
-### 3. 登录使用
+## 使用流程
 
-- **教师默认账号**: `teacher` / `admin123`（首次使用后请修改密码）
-- **学生入口**: 输入姓名即可
+1. 教师打开 `/teacher`，输入密码（默认 `admin123`）
+2. 在教室大屏打开 `/display`
+3. 教师在控制台输入任务内容，点击「发布任务」
+4. 学生在手机/电脑打开 `/submit`，看到任务
+5. 学生完成后输入姓名，点击「我完成了！」
+6. 大屏实时显示气球、彩纸和排名动画
 
 ## 技术栈
 
-- **后端**: Python / Flask
-- **数据库**: SQLite（无需额外安装）
-- **前端**: 原生 HTML/CSS，响应式设计，支持移动端
-
-## 文件结构
-
-```
-task_system/
-├── app.py              # Flask 应用主程序
-├── requirements.txt    # Python 依赖
-├── tasks.db            # SQLite 数据库（自动创建）
-├── uploads/            # 上传文件存储目录
-├── static/
-│   └── style.css       # 样式表
-└── templates/
-    ├── base.html               # 基础模板
-    ├── index.html              # 首页
-    ├── login.html              # 教师登录
-    ├── student_login.html      # 学生入口
-    ├── teacher_dashboard.html  # 教师任务管理
-    ├── create_task.html        # 创建任务
-    ├── view_submissions.html   # 查看提交（教师）
-    ├── teacher_settings.html   # 修改密码
-    ├── student_tasks.html      # 任务列表（学生）
-    ├── submit_task.html        # 提交任务
-    └── my_submissions.html     # 我的提交记录
-```
-
-## 部署建议
-
-生产环境中建议：
-
-1. 修改 `app.py` 中的 `SECRET_KEY` 或通过环境变量 `SECRET_KEY` 设置
-2. 使用 Gunicorn 等 WSGI 服务器运行：
-   ```bash
-   pip install gunicorn
-   gunicorn -w 4 -b 0.0.0.0:5000 app:app
-   ```
-3. 首次登录后修改默认教师密码
+- Flask + Flask-SocketIO（实时通信）
+- Web Audio API（音乐和音效）
+- CSS 动画（气球、彩纸、星空）
+- 纯前端，无需数据库

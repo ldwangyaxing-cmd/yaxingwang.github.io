@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>教师控制台</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:#1a1a2e;min-height:100vh;color:#fff;padding:20px}
+.container{max-width:700px;margin:0 auto}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px}
+.header h1{font-size:1.4rem}
+.header a{color:rgba(255,255,255,.5);text-decoration:none;font-size:.9rem}
+.header a:hover{color:#fff}
+
+.panel{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:16px;padding:24px;margin-bottom:20px}
+.panel h2{font-size:1.1rem;margin-bottom:16px;color:rgba(255,255,255,.7)}
+
+textarea{width:100%;padding:14px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);border-radius:10px;color:#fff;font-size:1rem;font-family:inherit;resize:vertical;min-height:80px;outline:none}
+textarea:focus{border-color:rgba(255,255,255,.4)}
+textarea::placeholder{color:rgba(255,255,255,.3)}
+
+.btn-row{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+.btn{padding:10px 20px;border:none;border-radius:10px;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .2s;color:#fff}
+.btn:hover{transform:translateY(-1px)}
+.btn-primary{background:linear-gradient(135deg,#667eea,#764ba2)}
+.btn-warning{background:linear-gradient(135deg,#f093fb,#f5576c)}
+.btn-success{background:linear-gradient(135deg,#43e97b,#38f9d7);color:#1a1a2e}
+.btn-muted{background:rgba(255,255,255,.15)}
+.btn-muted:hover{background:rgba(255,255,255,.25)}
+
+.status{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.status-dot{width:12px;height:12px;border-radius:50%}
+.status-dot.active{background:#43e97b;box-shadow:0 0 8px #43e97b}
+.status-dot.inactive{background:#666}
+
+.links{display:flex;flex-direction:column;gap:8px}
+.link-item{background:rgba(255,255,255,.06);border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;font-size:.9rem}
+.link-item code{background:rgba(255,255,255,.1);padding:4px 8px;border-radius:6px;font-size:.85rem}
+
+.sub-list{max-height:300px;overflow-y:auto}
+.sub-item{display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(255,255,255,.04);border-radius:10px;margin-bottom:6px}
+.sub-item .rank{font-size:1.2rem;min-width:36px;text-align:center}
+.sub-item .animal{font-size:1.4rem}
+.sub-item .name{flex:1;font-weight:600}
+.sub-item .time{font-size:.8rem;opacity:.5}
+.empty{text-align:center;color:rgba(255,255,255,.3);padding:30px}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>👨‍🏫 教师控制台</h1>
+    <a href="/teacher/logout">退出登录</a>
+  </div>
+
+  <!-- Link info -->
+  <div class="panel">
+    <h2>📎 分享链接</h2>
+    <div class="links">
+      <div class="link-item">
+        <span>投屏展示</span>
+        <code id="displayUrl"></code>
+      </div>
+      <div class="link-item">
+        <span>学生提交</span>
+        <code id="submitUrl"></code>
+      </div>
+    </div>
+  </div>
+
+  <!-- Task control -->
+  <div class="panel">
+    <h2>📝 发布任务</h2>
+    <div class="status">
+      <div class="status-dot" id="statusDot"></div>
+      <span id="statusText">未发布</span>
+    </div>
+    <textarea id="taskInput" placeholder="输入任务内容，例如：请同学们做一个主成分分析的可视化交互系统">{{ task.title }}</textarea>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="publishTask()">发布任务</button>
+      <button class="btn btn-warning" onclick="closeTask()">关闭任务</button>
+      <button class="btn btn-muted" onclick="clearSubs()">清空提交</button>
+      <button class="btn btn-success" onclick="toggleRemoteMusic()">🎵 切换音乐</button>
+    </div>
+  </div>
+
+  <!-- Submissions -->
+  <div class="panel">
+    <h2>📊 提交列表 (<span id="subCount">{{ submissions|length }}</span>人)</h2>
+    <div class="sub-list" id="subList">
+      {% if submissions %}
+        {% for s in submissions %}
+        <div class="sub-item">
+          <div class="rank">{{ '🥇' if s.rank==1 else ('🥈' if s.rank==2 else ('🥉' if s.rank==3 else '#'~s.rank)) }}</div>
+          <div class="animal">{{ s.animal }}</div>
+          <div class="name">{{ s.name }}</div>
+          <div class="time">{{ s.time }}</div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty" id="emptyMsg">暂无提交</div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
+<script>
+const socket = io();
+const baseUrl = location.origin;
+document.getElementById('displayUrl').textContent = baseUrl + '/display';
+document.getElementById('submitUrl').textContent = baseUrl + '/submit';
+
+function updateStatus(active){
+  const dot=document.getElementById('statusDot');
+  const txt=document.getElementById('statusText');
+  dot.className='status-dot '+(active?'active':'inactive');
+  txt.textContent=active?'任务进行中':'未发布';
+}
+updateStatus({{ 'true' if task.active else 'false' }});
+
+function publishTask(){
+  const title=document.getElementById('taskInput').value.trim();
+  if(!title){alert('请输入任务内容');return;}
+  socket.emit('set_task',{title});
+  updateStatus(true);
+}
+function closeTask(){
+  socket.emit('close_task');
+  updateStatus(false);
+}
+function clearSubs(){
+  if(confirm('确定清空所有提交？'))socket.emit('clear_submissions');
+}
+function toggleRemoteMusic(){
+  socket.emit('toggle_music',{playing:true});
+}
+
+socket.on('task_updated',data=>{updateStatus(data.active)});
+socket.on('submissions_cleared',()=>{
+  document.getElementById('subList').innerHTML='<div class="empty">暂无提交</div>';
+  document.getElementById('subCount').textContent='0';
+});
+socket.on('new_submission',entry=>{
+  const empty=document.getElementById('emptyMsg');
+  if(empty)empty.remove();
+  const list=document.getElementById('subList');
+  const medal=entry.rank===1?'🥇':entry.rank===2?'🥈':entry.rank===3?'🥉':`#${entry.rank}`;
+  const d=document.createElement('div');
+  d.className='sub-item';
+  d.innerHTML=`<div class="rank">${medal}</div><div class="animal">${entry.animal}</div><div class="name">${entry.name}</div><div class="time">${entry.time}</div>`;
+  list.appendChild(d);
+  document.getElementById('subCount').textContent=list.querySelectorAll('.sub-item').length;
+});
+</script>
+</body>
+</html>
