@@ -8,7 +8,6 @@
 *{margin:0;padding:0;box-sizing:border-box}
 body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:#0f0c29;background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);min-height:100vh;overflow:hidden;color:#fff}
 
-/* Audio unlock overlay */
 .audio-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);z-index:999;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:opacity .5s}
 .audio-overlay.hidden{opacity:0;pointer-events:none}
 .audio-prompt{text-align:center}
@@ -16,43 +15,37 @@ body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:#0f0c29;b
 @keyframes pulse-icon{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
 .audio-prompt p{font-size:1.4rem;margin-top:16px;color:rgba(255,255,255,.7)}
 
-/* Stars background */
 .stars{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:0}
 .star{position:absolute;background:#fff;border-radius:50%;animation:twinkle var(--dur) ease-in-out infinite alternate}
 @keyframes twinkle{0%{opacity:.2;transform:scale(.8)}100%{opacity:1;transform:scale(1.2)}}
 
-/* Header */
 .header{position:relative;z-index:10;text-align:center;padding:30px 20px 10px}
 .task-title{font-size:2.4rem;font-weight:800;background:linear-gradient(90deg,#f093fb,#f5576c,#ffd200);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-shadow:none;animation:glow 3s ease-in-out infinite alternate}
 @keyframes glow{0%{filter:brightness(1)}100%{filter:brightness(1.3)}}
 .task-subtitle{font-size:1.1rem;color:rgba(255,255,255,.6);margin-top:8px}
 
-/* Counter */
 .counter{position:fixed;top:20px;right:30px;z-index:20;background:rgba(255,255,255,.1);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.2);border-radius:16px;padding:12px 20px;text-align:center}
 .counter-num{font-size:2.2rem;font-weight:800;color:#ffd200}
 .counter-label{font-size:.8rem;color:rgba(255,255,255,.6)}
 
-/* Music btn */
-.music-btn{position:fixed;top:20px;left:30px;z-index:20;background:rgba(255,255,255,.1);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.2);border-radius:50%;width:50px;height:50px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.4rem;transition:all .3s}
+.music-ctrl{position:fixed;top:20px;left:30px;z-index:20;display:flex;gap:8px;align-items:center}
+.music-btn{background:rgba(255,255,255,.1);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.2);border-radius:50%;width:50px;height:50px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1.4rem;transition:all .3s}
 .music-btn:hover{background:rgba(255,255,255,.2);transform:scale(1.1)}
 .music-btn.playing{animation:pulse-music 1s ease-in-out infinite}
 @keyframes pulse-music{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+.track-name{background:rgba(255,255,255,.1);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.2);border-radius:12px;padding:6px 14px;font-size:.8rem;color:rgba(255,255,255,.7);white-space:nowrap}
 
-/* Tower area */
 .tower-area{position:relative;z-index:10;display:flex;flex-direction:column-reverse;align-items:center;padding:20px;gap:8px;margin-top:20px;max-height:calc(100vh - 180px);overflow-y:auto;scrollbar-width:none}
 .tower-area::-webkit-scrollbar{display:none}
 
-/* Submission block */
 .sub-block{display:flex;align-items:center;gap:12px;padding:14px 24px;border-radius:16px;font-size:1.1rem;font-weight:600;animation:slideUp .6s cubic-bezier(.34,1.56,.64,1);transform-origin:bottom center;min-width:300px;max-width:600px;position:relative;overflow:hidden}
 .sub-block::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:linear-gradient(90deg,rgba(255,255,255,.1),rgba(255,255,255,.05));pointer-events:none}
 @keyframes slideUp{0%{opacity:0;transform:translateY(60px) scale(.8)}60%{transform:translateY(-10px) scale(1.05)}100%{opacity:1;transform:translateY(0) scale(1)}}
-
 .sub-rank{font-size:1.6rem;min-width:40px;text-align:center}
 .sub-animal{font-size:2rem;animation:bounce-animal 2s ease-in-out infinite}
 @keyframes bounce-animal{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
 .sub-name{flex:1;font-size:1.3rem}
 .sub-time{font-size:.8rem;opacity:.6}
-
 .rank-1{background:linear-gradient(135deg,#ffd700,#ffaa00);color:#5a3e00;font-size:1.3rem;box-shadow:0 0 30px rgba(255,215,0,.4)}
 .rank-1 .sub-rank{position:relative}
 .rank-1 .sub-rank::after{content:'👑';position:absolute;top:-22px;left:50%;transform:translateX(-50%);font-size:1.6rem;animation:crown-bounce 1s ease-in-out infinite}
@@ -61,18 +54,15 @@ body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:#0f0c29;b
 .rank-3{background:linear-gradient(135deg,#cd7f32,#b8690e);color:#fff;box-shadow:0 0 20px rgba(205,127,50,.3)}
 .rank-other{background:rgba(255,255,255,.1);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.15)}
 
-/* Balloon */
 .balloon-container{position:fixed;bottom:-100px;z-index:30;pointer-events:none}
 .balloon{width:80px;height:100px;border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;position:relative;animation:float-up 4s ease-out forwards}
 .balloon::after{content:'';position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);width:2px;height:40px;background:rgba(255,255,255,.4)}
 .balloon-name{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-weight:800;font-size:.9rem;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.3);white-space:nowrap}
 @keyframes float-up{0%{transform:translateY(0) rotate(0deg);opacity:1}30%{opacity:1}100%{transform:translateY(calc(-100vh - 200px)) rotate(15deg);opacity:0}}
 
-/* Confetti */
 .confetti{position:fixed;top:-10px;z-index:25;pointer-events:none;animation:confetti-fall 3s linear forwards}
 @keyframes confetti-fall{0%{transform:translateY(0) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
 
-/* Notification popup */
 .notif{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);z-index:40;background:rgba(0,0,0,.7);backdrop-filter:blur(20px);border:2px solid rgba(255,255,255,.2);border-radius:24px;padding:40px 60px;text-align:center;animation:notif-pop .6s cubic-bezier(.34,1.56,.64,1) forwards}
 @keyframes notif-pop{0%{transform:translate(-50%,-50%) scale(0)}100%{transform:translate(-50%,-50%) scale(1)}}
 .notif-animal{font-size:4rem}
@@ -84,7 +74,6 @@ body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:#0f0c29;b
 </head>
 <body>
 
-<!-- Click-to-unlock audio overlay -->
 <div class="audio-overlay" id="audioOverlay" onclick="unlockAudio()">
   <div class="audio-prompt">
     <div class="icon">🔊</div>
@@ -94,7 +83,10 @@ body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:#0f0c29;b
 
 <div class="stars" id="stars"></div>
 
-<div class="music-btn" id="musicBtn" onclick="toggleMusic()">🔇</div>
+<div class="music-ctrl">
+  <div class="music-btn" id="musicBtn" onclick="toggleMusic()">🔇</div>
+  <div class="track-name" id="trackName">--</div>
+</div>
 
 <div class="counter">
   <div class="counter-num" id="counterNum">0</div>
@@ -110,143 +102,266 @@ body{font-family:"PingFang SC","Microsoft YaHei",sans-serif;background:#0f0c29;b
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.5/socket.io.min.js"></script>
 <script>
-const socket = io();
-let submissions = [];
-let musicPlaying = false;
-let audioCtx = null;
-let masterGain = null;
-let audioUnlocked = false;
+var socket = io();
+var submissions = [];
+var musicPlaying = false;
+var audioCtx = null;
+var masterGain = null;
+var audioUnlocked = false;
+var musicTimer = null;
+var nextNoteTime = 0;
+var beatIndex = 0;
+var currentTrack = 0;
 
 // ---- Stars ----
-(function createStars(){
-  const c = document.getElementById('stars');
-  for(let i=0;i<80;i++){
-    const s=document.createElement('div');
+(function(){
+  var c = document.getElementById('stars');
+  for(var i=0;i<80;i++){
+    var s=document.createElement('div');
     s.className='star';
-    const size=Math.random()*3+1;
+    var size=Math.random()*3+1;
     s.style.cssText='width:'+size+'px;height:'+size+'px;top:'+Math.random()*100+'%;left:'+Math.random()*100+'%;--dur:'+(Math.random()*3+2)+'s;animation-delay:'+Math.random()*3+'s';
     c.appendChild(s);
   }
 })();
 
-// ---- Audio unlock ----
-function unlockAudio(){
-  if(!audioCtx){
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    masterGain = audioCtx.createGain();
-    masterGain.gain.value = 0.18;
-    masterGain.connect(audioCtx.destination);
+// =====================================================
+// MUSIC ENGINE - 5 Tracks
+// =====================================================
+
+var N = {
+  C3:130.81,D3:146.83,E3:164.81,F3:174.61,G3:196.00,A3:220.00,B3:246.94,
+  C4:261.63,D4:293.66,E4:329.63,F4:349.23,G4:392.00,A4:440.00,B4:493.88,
+  C5:523.25,D5:587.33,E5:659.25,F5:698.46,G5:783.99,A5:880.00,B5:987.77,
+  C6:1046.5,D6:1174.66,E6:1318.5
+};
+
+var tracks = [
+  // Track 0: 春日漫步 - 明亮大调 C major, 轻快钢琴感
+  {
+    name: '🌸 春日漫步',
+    bpm: 132,
+    melodyType: 'triangle',
+    melodyVol: 0.10,
+    melody: [
+      N.E4,N.G4,N.C5,N.E5, N.D5,N.C5,N.B4,N.C5,
+      N.A4,N.C5,N.E5,N.G5, N.E5,N.D5,N.C5,N.D5,
+      N.G4,N.B4,N.D5,N.G5, N.E5,N.D5,N.C5,N.E5,
+      N.C5,N.E5,N.G5,N.E5, N.D5,N.C5,N.B4,N.G4,
+      N.F4,N.A4,N.C5,N.F5, N.E5,N.D5,N.C5,N.D5,
+      N.E4,N.G4,N.B4,N.D5, N.C5,N.B4,N.A4,N.G4,
+      N.A4,N.C5,N.E5,N.A5, N.G5,N.E5,N.C5,N.E5,
+      N.G4,N.B4,N.D5,N.G4, N.A4,N.B4,N.C5,N.C5,
+    ],
+    bassNotes: [N.C3,N.C3,N.C3,N.C3, N.A3,N.A3,N.A3,N.A3, N.G3,N.G3,N.G3,N.G3, N.C3,N.C3,N.C3,N.C3,
+                N.F3,N.F3,N.F3,N.F3, N.E3,N.E3,N.E3,N.E3, N.A3,N.A3,N.A3,N.A3, N.G3,N.G3,N.G3,N.G3],
+    kick: [1,0,0,0, 1,0,1,0, 1,0,0,0, 1,0,1,0],
+    snare:[0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,1],
+    hihat:[1,0,1,1, 1,0,1,1, 1,0,1,1, 1,0,1,1],
+    chordEvery: 8,
+    chordNotes: [[N.C4,N.E4,N.G4],[N.A3,N.C4,N.E4],[N.G3,N.B3,N.D4],[N.C4,N.E4,N.G4],
+                 [N.F3,N.A3,N.C4],[N.E3,N.G3,N.B3],[N.A3,N.C4,N.E4],[N.G3,N.B3,N.D4]]
+  },
+  // Track 1: 阳光午后 - G major, 温暖弹跳
+  {
+    name: '☀️ 阳光午后',
+    bpm: 120,
+    melodyType: 'sine',
+    melodyVol: 0.13,
+    melody: [
+      N.G4,N.A4,N.B4,N.D5, N.E5,N.D5,N.B4,N.A4,
+      N.G4,N.B4,N.D5,N.G5, N.E5,N.D5,N.B4,N.D5,
+      N.C5,N.D5,N.E5,N.G5, N.E5,N.D5,N.C5,N.B4,
+      N.A4,N.B4,N.D5,N.E5, N.D5,N.B4,N.A4,N.G4,
+      N.B4,N.D5,N.G5,N.B5, N.A5,N.G5,N.E5,N.D5,
+      N.E5,N.D5,N.B4,N.G4, N.A4,N.B4,N.D5,N.E5,
+      N.G5,N.E5,N.D5,N.B4, N.A4,N.G4,N.A4,N.B4,
+      N.D5,N.E5,N.D5,N.B4, N.G4,N.A4,N.B4,N.G4,
+    ],
+    bassNotes: [N.G3,N.G3,N.G3,N.G3, N.G3,N.G3,N.G3,N.G3, N.C3,N.C3,N.C3,N.C3, N.D3,N.D3,N.D3,N.D3,
+                N.G3,N.G3,N.G3,N.G3, N.E3,N.E3,N.E3,N.E3, N.C3,N.C3,N.C3,N.C3, N.D3,N.D3,N.D3,N.D3],
+    kick: [1,0,0,0, 1,0,0,0, 1,0,0,0, 1,0,0,0],
+    snare:[0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,0],
+    hihat:[1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0],
+    chordEvery: 8,
+    chordNotes: [[N.G3,N.B3,N.D4],[N.G3,N.B3,N.D4],[N.C4,N.E4,N.G4],[N.D4,N.F4,N.A4],
+                 [N.G3,N.B3,N.D4],[N.E3,N.G3,N.B3],[N.C4,N.E4,N.G4],[N.D4,N.F4,N.A4]]
+  },
+  // Track 2: 星空派对 - 电子感, 快速, A minor pentatonic
+  {
+    name: '🌟 星空派对',
+    bpm: 150,
+    melodyType: 'square',
+    melodyVol: 0.06,
+    melody: [
+      N.A4,N.C5,N.D5,N.E5, N.G5,N.E5,N.D5,N.C5,
+      N.A4,N.G4,N.A4,N.C5, N.D5,N.E5,N.G5,N.A5,
+      N.G5,N.E5,N.D5,N.C5, N.A4,N.C5,N.D5,N.E5,
+      N.D5,N.C5,N.A4,N.G4, N.A4,N.C5,N.D5,N.A4,
+      N.E5,N.G5,N.A5,N.G5, N.E5,N.D5,N.E5,N.G5,
+      N.A5,N.G5,N.E5,N.D5, N.C5,N.D5,N.E5,N.C5,
+      N.D5,N.E5,N.G5,N.A5, N.G5,N.E5,N.D5,N.C5,
+      N.A4,N.C5,N.D5,N.E5, N.D5,N.C5,N.A4,N.A4,
+    ],
+    bassNotes: [N.A3,N.A3,N.A3,N.A3, N.A3,N.A3,N.A3,N.A3, N.C3,N.C3,N.C3,N.C3, N.D3,N.D3,N.D3,N.D3,
+                N.E3,N.E3,N.E3,N.E3, N.A3,N.A3,N.A3,N.A3, N.D3,N.D3,N.D3,N.D3, N.A3,N.A3,N.A3,N.A3],
+    kick: [1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0],
+    snare:[0,0,0,0, 1,0,0,1, 0,0,0,0, 1,0,0,1],
+    hihat:[1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1],
+    chordEvery: 4,
+    chordNotes: [[N.A3,N.C4,N.E4],[N.A3,N.C4,N.E4],[N.C4,N.E4,N.G4],[N.D4,N.F4,N.A4],
+                 [N.E4,N.G4,N.B4],[N.A3,N.C4,N.E4],[N.D4,N.F4,N.A4],[N.A3,N.C4,N.E4]]
+  },
+  // Track 3: 甜蜜八音盒 - 高音, 叮咚感, F major
+  {
+    name: '🎵 甜蜜八音盒',
+    bpm: 108,
+    melodyType: 'sine',
+    melodyVol: 0.11,
+    melody: [
+      N.F5,N.A5,N.C6,N.A5, N.F5,N.C5,N.F5,N.A5,
+      N.G5,N.B5,N.D6,N.B5, N.G5,N.D5,N.G5,N.B5,
+      N.A5,N.C6,N.E6,N.C6, N.A5,N.E5,N.A5,N.C6,
+      N.G5,N.B5,N.D6,N.B5, N.G5,N.E5,N.D5,N.C5,
+      N.F5,N.C6,N.A5,N.F5, N.C5,N.F5,N.A5,N.C6,
+      N.E5,N.G5,N.B5,N.G5, N.E5,N.C5,N.E5,N.G5,
+      N.D5,N.F5,N.A5,N.D6, N.C6,N.A5,N.F5,N.A5,
+      N.C5,N.E5,N.G5,N.C6, N.G5,N.E5,N.C5,N.C5,
+    ],
+    bassNotes: [N.F3,N.F3,N.F3,N.F3, N.G3,N.G3,N.G3,N.G3, N.A3,N.A3,N.A3,N.A3, N.G3,N.G3,N.G3,N.G3,
+                N.F3,N.F3,N.F3,N.F3, N.E3,N.E3,N.E3,N.E3, N.D3,N.D3,N.D3,N.D3, N.C3,N.C3,N.C3,N.C3],
+    kick: [1,0,0,0, 0,0,0,0, 1,0,0,0, 0,0,0,0],
+    snare:[0,0,0,0, 0,0,0,0, 0,0,0,0, 0,0,0,0],
+    hihat:[1,0,0,1, 0,0,1,0, 1,0,0,1, 0,0,1,0],
+    chordEvery: 8,
+    chordNotes: [[N.F4,N.A4,N.C5],[N.G4,N.B4,N.D5],[N.A4,N.C5,N.E5],[N.G4,N.B4,N.D5],
+                 [N.F4,N.A4,N.C5],[N.E4,N.G4,N.B4],[N.D4,N.F4,N.A4],[N.C4,N.E4,N.G4]]
+  },
+  // Track 4: 冲刺时刻 - 紧凑有力, D major, 鼓点密集
+  {
+    name: '🚀 冲刺时刻',
+    bpm: 160,
+    melodyType: 'sawtooth',
+    melodyVol: 0.05,
+    melody: [
+      N.D5,N.E5,N.F5,N.A5, N.D5,N.F5,N.A5,N.D6,
+      N.C6,N.A5,N.F5,N.E5, N.D5,N.E5,N.F5,N.A5,
+      N.G5,N.A5,N.B5,N.D6, N.B5,N.A5,N.G5,N.F5,
+      N.E5,N.F5,N.A5,N.D6, N.A5,N.F5,N.E5,N.D5,
+      N.A5,N.D6,N.E6,N.D6, N.A5,N.F5,N.A5,N.D6,
+      N.C6,N.A5,N.G5,N.F5, N.E5,N.F5,N.G5,N.A5,
+      N.D5,N.F5,N.A5,N.D6, N.C6,N.B5,N.A5,N.G5,
+      N.F5,N.E5,N.D5,N.E5, N.F5,N.A5,N.D5,N.D5,
+    ],
+    bassNotes: [N.D3,N.D3,N.D3,N.D3, N.A3,N.A3,N.A3,N.A3, N.G3,N.G3,N.G3,N.G3, N.A3,N.A3,N.A3,N.A3,
+                N.D3,N.D3,N.D3,N.D3, N.C3,N.C3,N.C3,N.C3, N.D3,N.D3,N.D3,N.D3, N.A3,N.A3,N.A3,N.A3],
+    kick: [1,0,1,0, 1,0,1,0, 1,0,1,0, 1,0,1,0],
+    snare:[0,0,1,0, 1,0,0,1, 0,0,1,0, 1,0,1,0],
+    hihat:[1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1],
+    chordEvery: 4,
+    chordNotes: [[N.D4,N.F4,N.A4],[N.D4,N.F4,N.A4],[N.G4,N.B4,N.D5],[N.A4,N.C5,N.E5],
+                 [N.D4,N.F4,N.A4],[N.C4,N.E4,N.G4],[N.D4,N.F4,N.A4],[N.A3,N.C4,N.E4]]
   }
+];
+
+function initAudio(){
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  masterGain = audioCtx.createGain();
+  masterGain.gain.value = 0.20;
+  masterGain.connect(audioCtx.destination);
+}
+
+function unlockAudio(){
+  if(!audioCtx) initAudio();
   if(audioCtx.state === 'suspended') audioCtx.resume();
   audioUnlocked = true;
   document.getElementById('audioOverlay').classList.add('hidden');
-  // Auto-start music
+  switchTrack(0);
   startMusic();
 }
 
-// ---- Music System ----
-// Upbeat pentatonic melody with drums
-const BPM = 140;
-const beatSec = 60 / BPM;
-let musicTimer = null;
-let nextNoteTime = 0;
-let beatIndex = 0;
-
-const scale = [261.63,293.66,329.63,392.00,440.00,523.25,587.33,659.25,783.99,880.00];
-
-const melodySeq = [
-  4,5,7,9, 7,5,4,5,  9,7,5,4, 5,7,9,7,
-  3,4,5,7, 9,7,5,4,  5,4,3,4, 5,7,5,4,
-  7,9,7,5, 4,5,7,9,  5,4,3,4, 5,7,9,7,
-  9,7,5,4, 3,4,5,7,  4,5,7,9, 7,5,4,3,
-];
-
-const bassSeq = [
-  0,0,0,0, 2,2,2,2, 3,3,3,3, 4,4,4,4,
-  0,0,0,0, 3,3,3,3, 4,4,4,4, 2,2,2,2,
-  3,3,3,3, 0,0,0,0, 4,4,4,4, 2,2,2,2,
-  0,0,0,0, 3,3,3,3, 2,2,2,2, 4,4,4,4,
-];
-
-const drumPattern = [1,0,0,0, 1,0,1,0, 1,0,0,0, 1,0,1,0];
-const hihatPattern= [1,1,1,1, 1,1,1,1, 1,1,1,1, 1,1,1,1];
-const snarePattern= [0,0,0,0, 1,0,0,0, 0,0,0,0, 1,0,0,1];
-
+// ---- Playback primitives ----
 function playNote(freq, time, dur, type, vol){
   if(!audioCtx) return;
-  const osc = audioCtx.createOscillator();
-  const g = audioCtx.createGain();
+  var osc = audioCtx.createOscillator();
+  var g = audioCtx.createGain();
   osc.type = type;
   osc.frequency.setValueAtTime(freq, time);
   g.gain.setValueAtTime(vol, time);
   g.gain.exponentialRampToValueAtTime(0.001, time + dur);
-  osc.connect(g);
-  g.connect(masterGain);
-  osc.start(time);
-  osc.stop(time + dur + 0.05);
+  osc.connect(g); g.connect(masterGain);
+  osc.start(time); osc.stop(time + dur + 0.02);
 }
 
-function playNoise(time, dur, vol){
+function playNoise(time, dur, vol, hpFreq){
   if(!audioCtx) return;
-  const bufSize = audioCtx.sampleRate * dur;
-  const buf = audioCtx.createBuffer(1, bufSize, audioCtx.sampleRate);
-  const data = buf.getChannelData(0);
-  for(let i=0;i<bufSize;i++) data[i] = Math.random()*2-1;
-  const src = audioCtx.createBufferSource();
-  src.buffer = buf;
-  const g = audioCtx.createGain();
+  var len = Math.max(1, Math.floor(audioCtx.sampleRate * dur));
+  var buf = audioCtx.createBuffer(1, len, audioCtx.sampleRate);
+  var d = buf.getChannelData(0);
+  for(var i=0;i<len;i++) d[i] = Math.random()*2-1;
+  var src = audioCtx.createBufferSource(); src.buffer = buf;
+  var g = audioCtx.createGain();
   g.gain.setValueAtTime(vol, time);
   g.gain.exponentialRampToValueAtTime(0.001, time + dur);
-  const hp = audioCtx.createBiquadFilter();
-  hp.type = 'highpass';
-  hp.frequency.value = 8000;
-  src.connect(hp);
-  hp.connect(g);
-  g.connect(masterGain);
-  src.start(time);
-  src.stop(time + dur + 0.01);
+  var hp = audioCtx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = hpFreq||7000;
+  src.connect(hp); hp.connect(g); g.connect(masterGain);
+  src.start(time); src.stop(time + dur + 0.01);
 }
 
 function playKick(time){
   if(!audioCtx) return;
-  const osc = audioCtx.createOscillator();
-  const g = audioCtx.createGain();
+  var osc = audioCtx.createOscillator();
+  var g = audioCtx.createGain();
   osc.type = 'sine';
   osc.frequency.setValueAtTime(150, time);
-  osc.frequency.exponentialRampToValueAtTime(40, time + 0.12);
-  g.gain.setValueAtTime(0.5, time);
+  osc.frequency.exponentialRampToValueAtTime(35, time + 0.12);
+  g.gain.setValueAtTime(0.35, time);
   g.gain.exponentialRampToValueAtTime(0.001, time + 0.15);
-  osc.connect(g);
-  g.connect(masterGain);
-  osc.start(time);
-  osc.stop(time + 0.2);
+  osc.connect(g); g.connect(masterGain);
+  osc.start(time); osc.stop(time + 0.2);
 }
 
+// ---- Scheduler ----
 function scheduler(){
   if(!musicPlaying || !audioCtx) return;
-  while(nextNoteTime < audioCtx.currentTime + 0.1){
-    const t = nextNoteTime;
-    const mi = beatIndex % melodySeq.length;
-    const bi = beatIndex % bassSeq.length;
-    const di = beatIndex % drumPattern.length;
+  var tr = tracks[currentTrack];
+  var beatSec = 60 / tr.bpm;
+
+  while(nextNoteTime < audioCtx.currentTime + 0.12){
+    var t = nextNoteTime;
+    var mi = beatIndex % tr.melody.length;
+    var bi = beatIndex % tr.bassNotes.length;
+    var di = beatIndex % tr.kick.length;
 
     // Melody
-    playNote(scale[melodySeq[mi]], t, beatSec*0.8, 'triangle', 0.12);
-    // Melody octave shimmer
-    if(mi % 4 === 0) playNote(scale[melodySeq[mi]]*2, t, beatSec*0.3, 'sine', 0.04);
+    playNote(tr.melody[mi], t, beatSec*0.7, tr.melodyType, tr.melodyVol);
+
+    // Octave sparkle on downbeats
+    if(beatIndex % 4 === 0){
+      playNote(tr.melody[mi]*2, t, beatSec*0.25, 'sine', 0.03);
+    }
 
     // Bass
-    playNote(scale[bassSeq[bi]]/2, t, beatSec*0.9, 'sine', 0.15);
+    playNote(tr.bassNotes[bi], t, beatSec*0.85, 'sine', 0.12);
+
+    // Chords on chord beats
+    if(tr.chordEvery && beatIndex % tr.chordEvery === 0){
+      var ci = Math.floor(beatIndex / tr.chordEvery) % tr.chordNotes.length;
+      var chord = tr.chordNotes[ci];
+      for(var cn=0; cn<chord.length; cn++){
+        playNote(chord[cn], t, beatSec*tr.chordEvery*0.5, 'sine', 0.04);
+      }
+    }
 
     // Drums
-    if(drumPattern[di]) playKick(t);
-    if(snarePattern[di]) playNoise(t, 0.08, 0.08);
-    if(hihatPattern[di]) playNoise(t, 0.03, 0.03);
+    if(tr.kick[di]) playKick(t);
+    if(tr.snare[di]) playNoise(t, 0.07, 0.07, 4000);
+    if(tr.hihat[di]) playNoise(t, 0.025, 0.025, 9000);
 
     nextNoteTime += beatSec;
     beatIndex++;
   }
-  musicTimer = setTimeout(scheduler, 25);
+  musicTimer = setTimeout(scheduler, 20);
 }
 
 function startMusic(){
@@ -256,6 +371,7 @@ function startMusic(){
   beatIndex = 0;
   document.getElementById('musicBtn').textContent = '🎵';
   document.getElementById('musicBtn').classList.add('playing');
+  document.getElementById('trackName').textContent = tracks[currentTrack].name;
   scheduler();
 }
 
@@ -266,11 +382,17 @@ function stopMusic(){
   document.getElementById('musicBtn').classList.remove('playing');
 }
 
-function toggleMusic(){
-  if(!audioUnlocked){
-    unlockAudio();
-    return;
+function switchTrack(idx){
+  currentTrack = idx % tracks.length;
+  document.getElementById('trackName').textContent = tracks[currentTrack].name;
+  if(musicPlaying){
+    stopMusic();
+    startMusic();
   }
+}
+
+function toggleMusic(){
+  if(!audioUnlocked){ unlockAudio(); return; }
   if(musicPlaying) stopMusic();
   else startMusic();
 }
@@ -278,45 +400,36 @@ function toggleMusic(){
 // ---- Sound effects ----
 function playDing(){
   if(!audioCtx || !audioUnlocked) return;
-  if(audioCtx.state === 'suspended') audioCtx.resume();
-  const t = audioCtx.currentTime;
-  const freqs = [523.25, 659.25, 783.99, 1046.5];
-  freqs.forEach(function(f, i){
-    const o = audioCtx.createOscillator();
-    const g = audioCtx.createGain();
-    o.type = 'sine';
-    o.frequency.value = f;
-    g.gain.setValueAtTime(0.25, t + i*0.08);
-    g.gain.exponentialRampToValueAtTime(0.001, t + i*0.08 + 0.6);
-    o.connect(g);
-    g.connect(audioCtx.destination);
-    o.start(t + i*0.08);
-    o.stop(t + i*0.08 + 0.7);
+  if(audioCtx.state==='suspended') audioCtx.resume();
+  var t=audioCtx.currentTime;
+  [523.25,659.25,783.99,1046.5].forEach(function(f,i){
+    var o=audioCtx.createOscillator(), g=audioCtx.createGain();
+    o.type='sine'; o.frequency.value=f;
+    g.gain.setValueAtTime(0.2,t+i*0.08);
+    g.gain.exponentialRampToValueAtTime(0.001,t+i*0.08+0.6);
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(t+i*0.08); o.stop(t+i*0.08+0.7);
   });
 }
 
 function playFanfare(){
   if(!audioCtx || !audioUnlocked) return;
-  const t = audioCtx.currentTime;
-  var notes = [392,523.25,659.25,783.99,1046.5];
-  notes.forEach(function(f,i){
-    var o=audioCtx.createOscillator();
-    var g=audioCtx.createGain();
-    o.type='square';
-    o.frequency.value=f;
-    g.gain.setValueAtTime(0.1,t+i*0.12);
-    g.gain.exponentialRampToValueAtTime(0.001,t+i*0.12+0.8);
-    o.connect(g);g.connect(audioCtx.destination);
-    o.start(t+i*0.12);o.stop(t+i*0.12+0.9);
+  var t=audioCtx.currentTime;
+  [392,523.25,659.25,783.99,1046.5].forEach(function(f,i){
+    var o=audioCtx.createOscillator(), g=audioCtx.createGain();
+    o.type='triangle'; o.frequency.value=f;
+    g.gain.setValueAtTime(0.12,t+i*0.1);
+    g.gain.exponentialRampToValueAtTime(0.001,t+i*0.1+0.9);
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start(t+i*0.1); o.stop(t+i*0.1+1.0);
   });
 }
 
-// ---- Confetti ----
+// ---- Confetti / Balloon / Notif / Tower ----
 function spawnConfetti(count){
   var colors=['#f093fb','#f5576c','#ffd200','#43e97b','#38f9d7','#667eea','#ff6b6b','#feca57','#a29bfe','#fd79a8'];
   for(var i=0;i<(count||40);i++){
-    var c=document.createElement('div');
-    c.className='confetti';
+    var c=document.createElement('div'); c.className='confetti';
     var size=Math.random()*10+6;
     var shapes=['50%','2px','0'];
     var br=shapes[Math.floor(Math.random()*shapes.length)];
@@ -326,37 +439,28 @@ function spawnConfetti(count){
   }
 }
 
-// ---- Balloon ----
-function spawnBalloon(name, color){
+function spawnBalloon(name,color){
   var container=document.createElement('div');
   container.className='balloon-container';
   container.style.left=Math.random()*70+15+'%';
-  var b=document.createElement('div');
-  b.className='balloon';
+  var b=document.createElement('div'); b.className='balloon';
   b.style.background=color;
   b.style.boxShadow='inset -10px -10px 20px rgba(0,0,0,.15), inset 5px 5px 10px rgba(255,255,255,.3)';
-  var n=document.createElement('div');
-  n.className='balloon-name';
-  n.textContent=name;
-  b.appendChild(n);
-  container.appendChild(b);
-  document.body.appendChild(container);
+  var n=document.createElement('div'); n.className='balloon-name'; n.textContent=name;
+  b.appendChild(n); container.appendChild(b); document.body.appendChild(container);
   setTimeout(function(){container.remove()},5000);
 }
 
-// ---- Notification popup ----
 function showNotif(entry){
   var existing=document.querySelector('.notif');
-  if(existing)existing.remove();
-  var d=document.createElement('div');
-  d.className='notif';
+  if(existing) existing.remove();
+  var d=document.createElement('div'); d.className='notif';
   var medal=entry.rank===1?'🥇 第1名！太棒了！':entry.rank===2?'🥈 第2名！厉害！':entry.rank===3?'🥉 第3名！加油！':'第'+entry.rank+'名 完成！';
   d.innerHTML='<div class="notif-animal">'+entry.animal+'</div><div class="notif-name">'+entry.name+'</div><div class="notif-rank">'+medal+'</div>';
   document.body.appendChild(d);
   setTimeout(function(){d.classList.add('notif-hide');setTimeout(function(){d.remove()},500)},2500);
 }
 
-// ---- Tower ----
 function addToTower(entry){
   var t=document.getElementById('tower');
   var block=document.createElement('div');
@@ -365,65 +469,61 @@ function addToTower(entry){
   else if(entry.rank===2) cls='sub-block rank-2';
   else if(entry.rank===3) cls='sub-block rank-3';
   block.className=cls;
-
   var medal=entry.rank===1?'🥇':entry.rank===2?'🥈':entry.rank===3?'🥉':entry.rank;
   block.innerHTML='<div class="sub-rank">'+medal+'</div><div class="sub-animal">'+entry.animal+'</div><div class="sub-name">'+entry.name+'</div><div class="sub-time">'+entry.time+'</div>';
-
-  if(t.firstChild) t.insertBefore(block, t.firstChild);
+  if(t.firstChild) t.insertBefore(block,t.firstChild);
   else t.appendChild(block);
 }
 
 function updateCounter(){
-  document.getElementById('counterNum').textContent = submissions.length;
+  document.getElementById('counterNum').textContent=submissions.length;
 }
 
 // ---- Socket events ----
-socket.on('task_updated', function(data){
-  document.getElementById('taskTitle').textContent = data.title || '等待教师发布任务…';
-  document.getElementById('taskSubtitle').textContent = data.active ? '任务进行中…同学们加油！' : '任务已结束';
+socket.on('task_updated',function(data){
+  document.getElementById('taskTitle').textContent=data.title||'等待教师发布任务…';
+  document.getElementById('taskSubtitle').textContent=data.active?'任务进行中…同学们加油！':'任务已结束';
 });
 
-socket.on('submissions_cleared', function(){
-  submissions = [];
-  document.getElementById('tower').innerHTML = '';
+socket.on('submissions_cleared',function(){
+  submissions=[];
+  document.getElementById('tower').innerHTML='';
   updateCounter();
 });
 
-socket.on('new_submission', function(entry){
+socket.on('new_submission',function(entry){
   submissions.push(entry);
   updateCounter();
   addToTower(entry);
   showNotif(entry);
-
-  if(entry.rank <= 3) playFanfare();
-  else playDing();
-
-  spawnConfetti(entry.rank<=3 ? 60 : 35);
-
-  var balloonColors=['#f093fb','#667eea','#f5576c','#43e97b','#ffd200','#38f9d7','#ff6b6b','#a29bfe','#fd79a8','#feca57'];
+  if(entry.rank<=3) playFanfare(); else playDing();
+  spawnConfetti(entry.rank<=3?60:35);
+  var bc=['#f093fb','#667eea','#f5576c','#43e97b','#ffd200','#38f9d7','#ff6b6b','#a29bfe','#fd79a8','#feca57'];
   for(var i=0;i<3;i++){
-    (function(idx){
-      setTimeout(function(){
-        spawnBalloon(entry.name, balloonColors[(entry.rank+idx)%balloonColors.length]);
-      }, idx*300);
-    })(i);
+    (function(idx){setTimeout(function(){spawnBalloon(entry.name,bc[(entry.rank+idx)%bc.length])},idx*300)})(i);
   }
 });
 
-socket.on('music_toggle', function(){
+socket.on('music_toggle',function(){
   if(!audioUnlocked) unlockAudio();
   else toggleMusic();
 });
 
-// Init with existing data
+socket.on('music_switch',function(data){
+  if(!audioUnlocked) unlockAudio();
+  switchTrack(data.track);
+  if(!musicPlaying) startMusic();
+});
+
+// Init existing data
 {% for s in submissions %}
 submissions.push({{ s | tojson }});
 addToTower({{ s | tojson }});
 {% endfor %}
 updateCounter();
 {% if task.title %}
-document.getElementById('taskTitle').textContent = '{{ task.title }}';
-document.getElementById('taskSubtitle').textContent = {{ 'true' if task.active else 'false' }} ? '任务进行中…同学们加油！' : '任务已结束';
+document.getElementById('taskTitle').textContent='{{ task.title }}';
+document.getElementById('taskSubtitle').textContent={{ 'true' if task.active else 'false' }}?'任务进行中…同学们加油！':'任务已结束';
 {% endif %}
 </script>
 </body>

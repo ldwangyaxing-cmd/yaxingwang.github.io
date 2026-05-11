@@ -107,5 +107,11 @@ def handle_toggle_music():
     emit("music_toggle", broadcast=True)
 
 
+@socketio.on("switch_music")
+def handle_switch_music(data):
+    track = data.get("track", 0)
+    emit("music_switch", {"track": track}, broadcast=True)
+
+
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5000, debug=True, allow_unsafe_werkzeug=True)

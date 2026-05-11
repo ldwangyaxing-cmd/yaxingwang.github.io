@@ -45,6 +45,11 @@ textarea::placeholder{color:rgba(255,255,255,.3)}
 .sub-item .name{flex:1;font-weight:600}
 .sub-item .time{font-size:.8rem;opacity:.5}
 .empty{text-align:center;color:rgba(255,255,255,.3);padding:30px}
+
+.music-tracks{display:flex;flex-wrap:wrap;gap:10px}
+.track-btn{padding:12px 18px;border:2px solid rgba(255,255,255,.15);background:rgba(255,255,255,.06);border-radius:12px;color:#fff;font-size:.95rem;cursor:pointer;transition:all .2s;flex:1;min-width:140px;text-align:center}
+.track-btn:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.3)}
+.track-btn.active{border-color:#43e97b;background:rgba(67,233,123,.15);box-shadow:0 0 12px rgba(67,233,123,.2)}
 </style>
 </head>
 <body>
@@ -81,7 +86,19 @@ textarea::placeholder{color:rgba(255,255,255,.3)}
       <button class="btn btn-primary" onclick="publishTask()">发布任务</button>
       <button class="btn btn-warning" onclick="closeTask()">关闭任务</button>
       <button class="btn btn-muted" onclick="clearSubs()">清空提交</button>
-      <button class="btn btn-success" onclick="toggleRemoteMusic()">🎵 切换音乐</button>
+      <button class="btn btn-success" onclick="toggleRemoteMusic()">🎵 播放/暂停</button>
+    </div>
+  </div>
+
+  <!-- Music selector -->
+  <div class="panel">
+    <h2>🎶 选择背景音乐</h2>
+    <div class="music-tracks">
+      <button class="track-btn active" onclick="switchTrack(0)" id="tbtn0">🌸 春日漫步</button>
+      <button class="track-btn" onclick="switchTrack(1)" id="tbtn1">☀️ 阳光午后</button>
+      <button class="track-btn" onclick="switchTrack(2)" id="tbtn2">🌟 星空派对</button>
+      <button class="track-btn" onclick="switchTrack(3)" id="tbtn3">🎵 甜蜜八音盒</button>
+      <button class="track-btn" onclick="switchTrack(4)" id="tbtn4">🚀 冲刺时刻</button>
     </div>
   </div>
 
@@ -135,6 +152,13 @@ function clearSubs(){
 }
 function toggleRemoteMusic(){
   socket.emit('toggle_music');
+}
+var currentTrackBtn = 0;
+function switchTrack(idx){
+  document.getElementById('tbtn'+currentTrackBtn).classList.remove('active');
+  currentTrackBtn = idx;
+  document.getElementById('tbtn'+idx).classList.add('active');
+  socket.emit('switch_music',{track:idx});
 }
 
 socket.on('task_updated',data=>{updateStatus(data.active)});
