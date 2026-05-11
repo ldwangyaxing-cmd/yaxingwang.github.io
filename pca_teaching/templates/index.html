@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>主成分分析（PCA）交互教学</title>
+<style>
+:root{
+  --bg:#1e1e2e;--surface:#313244;--overlay:#45475a;
+  --text:#cdd6f4;--subtext:#a6adc8;--blue:#89b4fa;--mauve:#cba6f7;
+  --red:#f38ba8;--green:#a6e3a1;--yellow:#f9e2af;--pink:#f5c2e7;
+  --radius:12px;--font:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{font-size:15px}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh}
+
+/* Header */
+.site-header{background:var(--surface);border-bottom:1px solid var(--overlay);padding:16px 0;text-align:center}
+.site-header h1{font-size:1.6rem;background:linear-gradient(90deg,var(--blue),var(--mauve));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.site-header p{color:var(--subtext);font-size:.85rem;margin-top:4px}
+
+/* Tabs */
+.tabs{display:flex;justify-content:center;gap:4px;padding:16px 20px 0;flex-wrap:wrap}
+.tab{padding:10px 22px;border-radius:var(--radius) var(--radius) 0 0;background:var(--surface);color:var(--subtext);cursor:pointer;font-size:.9rem;font-weight:600;border:1px solid var(--overlay);border-bottom:none;transition:all .2s}
+.tab:hover{color:var(--text);background:var(--overlay)}
+.tab.active{color:var(--blue);background:var(--bg);border-color:var(--blue);border-bottom:2px solid var(--bg);position:relative;top:1px}
+
+.container{max-width:1200px;margin:0 auto;padding:20px}
+
+/* Panel */
+.panel{display:none;background:var(--surface);border:1px solid var(--overlay);border-radius:var(--radius);padding:24px;margin-top:-1px}
+.panel.active{display:block}
+.panel-title{font-size:1.15rem;font-weight:700;margin-bottom:6px}
+.panel-desc{color:var(--subtext);font-size:.85rem;margin-bottom:20px;line-height:1.6}
+
+/* Controls row */
+.controls{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:20px;align-items:flex-end}
+.ctrl-group{display:flex;flex-direction:column;gap:4px}
+.ctrl-group label{font-size:.8rem;color:var(--subtext);font-weight:500}
+.ctrl-group input[type=range]{width:180px;accent-color:var(--blue)}
+.ctrl-group select{padding:6px 10px;background:var(--overlay);color:var(--text);border:1px solid var(--overlay);border-radius:8px;font-size:.85rem}
+.ctrl-value{font-size:.8rem;color:var(--yellow);font-weight:600;min-width:40px}
+.ctrl-row{display:flex;align-items:center;gap:8px}
+
+.btn{padding:8px 18px;border:none;border-radius:8px;font-size:.85rem;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-primary{background:var(--blue);color:var(--bg)}
+.btn-primary:hover{filter:brightness(1.1)}
+.btn:disabled{opacity:.5;cursor:wait}
+
+/* Result image */
+.result-area{text-align:center;min-height:200px;position:relative}
+.result-area img{max-width:100%;border-radius:8px;border:1px solid var(--overlay)}
+.loading{color:var(--subtext);padding:60px;font-size:.9rem}
+
+/* Info cards */
+.info-row{display:flex;gap:12px;margin-top:16px;flex-wrap:wrap}
+.info-card{background:var(--overlay);border-radius:10px;padding:12px 16px;flex:1;min-width:140px}
+.info-card .label{font-size:.75rem;color:var(--subtext)}
+.info-card .value{font-size:1.2rem;font-weight:700;color:var(--yellow);margin-top:2px}
+
+/* Face grid */
+.face-grid{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:12px 0}
+.face-item{text-align:center}
+.face-item img{width:100px;height:100px;border-radius:6px;border:2px solid var(--overlay);image-rendering:pixelated;cursor:pointer;transition:all .2s}
+.face-item img:hover{border-color:var(--blue);transform:scale(1.05)}
+.face-item img.selected{border-color:var(--yellow);box-shadow:0 0 10px rgba(249,226,175,.3)}
+.face-item .face-label{font-size:.7rem;color:var(--subtext);margin-top:2px}
+
+/* Recon steps */
+.recon-row{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:16px 0}
+.recon-item{text-align:center;background:var(--overlay);border-radius:10px;padding:10px}
+.recon-item img{width:100px;height:100px;border-radius:6px;image-rendering:pixelated}
+.recon-item .recon-label{font-size:.75rem;color:var(--subtext);margin-top:4px}
+.recon-item .recon-var{font-size:.7rem;color:var(--green)}
+
+/* Eigenfaces */
+.eigen-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:12px 0}
+.eigen-item{text-align:center}
+.eigen-item img{width:80px;height:80px;border-radius:6px;image-rendering:pixelated;border:1px solid var(--overlay)}
+.eigen-item .eigen-label{font-size:.7rem;color:var(--subtext);margin-top:2px}
+
+/* Concept cards */
+.concepts{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:16px;margin-top:20px}
+.concept-card{background:var(--overlay);border-radius:var(--radius);padding:18px;border-left:3px solid var(--blue)}
+.concept-card h3{font-size:.95rem;margin-bottom:6px;color:var(--blue)}
+.concept-card p{font-size:.82rem;color:var(--subtext);line-height:1.6}
+.concept-card.red{border-left-color:var(--red)}
+.concept-card.red h3{color:var(--red)}
+.concept-card.green{border-left-color:var(--green)}
+.concept-card.green h3{color:var(--green)}
+.concept-card.mauve{border-left-color:var(--mauve)}
+.concept-card.mauve h3{color:var(--mauve)}
+
+.compare-row{display:flex;gap:16px;align-items:flex-start;justify-content:center;flex-wrap:wrap;margin:12px 0}
+.compare-item{text-align:center}
+.compare-item img{width:120px;height:120px;border-radius:8px;image-rendering:pixelated;border:2px solid var(--overlay)}
+.compare-item .compare-label{font-size:.8rem;color:var(--subtext);margin-top:4px}
+.arrow{font-size:2rem;color:var(--yellow);align-self:center;padding-top:20px}
+
+/* Footer */
+.footer{text-align:center;padding:20px;color:var(--subtext);font-size:.8rem;margin-top:30px}
+
+@media(max-width:700px){
+  .controls{flex-direction:column}
+  .ctrl-group input[type=range]{width:100%}
+  .compare-row{flex-direction:column;align-items:center}
+  .arrow{transform:rotate(90deg)}
+}
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <h1>📊 主成分分析（PCA）交互教学</h1>
+  <p>通过交互式可视化，直观理解 PCA 的核心概念</p>
+</div>
+
+<div class="container">
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab(0)">📐 2D 直觉演示</div>
+  <div class="tab" onclick="switchTab(1)">🌸 真实数据集</div>
+  <div class="tab" onclick="switchTab(2)">👤 人脸重建</div>
+</div>
+
+<!-- ==================== Tab 0: 2D Demo ==================== -->
+<div class="panel active" id="panel0">
+  <div class="panel-title">2D 数据的 PCA 直觉</div>
+  <div class="panel-desc">
+    调整下方参数生成不同分布的二维数据，观察主成分方向如何变化。
+    <strong>PC1</strong> 总是指向数据方差最大的方向，<strong>PC2</strong> 与之正交。
+  </div>
+
+  <div class="controls">
+    <div class="ctrl-group">
+      <label>X 方向展幅</label>
+      <div class="ctrl-row">
+        <input type="range" id="spreadX" min="0.5" max="6" step="0.1" value="3.0" oninput="upVal(this,'vSpreadX')">
+        <span class="ctrl-value" id="vSpreadX">3.0</span>
+      </div>
+    </div>
+    <div class="ctrl-group">
+      <label>Y 方向展幅</label>
+      <div class="ctrl-row">
+        <input type="range" id="spreadY" min="0.2" max="6" step="0.1" value="1.0" oninput="upVal(this,'vSpreadY')">
+        <span class="ctrl-value" id="vSpreadY">1.0</span>
+      </div>
+    </div>
+    <div class="ctrl-group">
+      <label>旋转角度</label>
+      <div class="ctrl-row">
+        <input type="range" id="angle" min="0" max="180" step="1" value="30" oninput="upVal(this,'vAngle')">
+        <span class="ctrl-value" id="vAngle">30°</span>
+      </div>
+    </div>
+    <div class="ctrl-group">
+      <label>数据点数</label>
+      <div class="ctrl-row">
+        <input type="range" id="nPoints" min="30" max="300" step="10" value="100" oninput="upVal(this,'vPoints')">
+        <span class="ctrl-value" id="vPoints">100</span>
+      </div>
+    </div>
+    <button class="btn btn-primary" id="btn2d" onclick="run2D()">生成 &amp; 分析</button>
+  </div>
+
+  <div class="result-area" id="result2d">
+    <div class="loading">👆 调整参数后点击「生成 & 分析」</div>
+  </div>
+
+  <div class="concepts">
+    <div class="concept-card">
+      <h3>什么是主成分？</h3>
+      <p>主成分是数据中<strong>方差最大</strong>的方向。第一主成分（PC1）捕获最多的信息，第二主成分（PC2）在与 PC1 正交的方向上捕获次多信息。</p>
+    </div>
+    <div class="concept-card red">
+      <h3>为什么要标准化？</h3>
+      <p>不同特征的量纲可能不同。标准化后每个特征均值为 0、标准差为 1，防止量纲大的特征主导 PCA。</p>
+    </div>
+    <div class="concept-card green">
+      <h3>方差 = 信息</h3>
+      <p>在 PCA 中，方差代表信息量。方差越大的方向，包含的信息越多。PCA 的目标就是找到方差最大的几个正交方向。</p>
+    </div>
+    <div class="concept-card mauve">
+      <h3>试一试</h3>
+      <p>把 X 和 Y 展幅设成一样（如 3.0 和 3.0），观察两个主成分的方差比例有何变化？当数据是圆形分布时，主成分方向还有意义吗？</p>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== Tab 1: Real Data ==================== -->
+<div class="panel" id="panel1">
+  <div class="panel-title">真实数据集上的 PCA</div>
+  <div class="panel-desc">
+    选择一个经典数据集，调整保留的主成分数量，观察碎石图和累积方差变化。思考：保留多少个主成分才足够？
+  </div>
+
+  <div class="controls">
+    <div class="ctrl-group">
+      <label>数据集</label>
+      <select id="dataset" onchange="updateMaxComp()">
+        <option value="iris">Iris 鸢尾花（4维，150样本）</option>
+        <option value="wine">Wine 红酒（13维，178样本）</option>
+      </select>
+    </div>
+    <div class="ctrl-group">
+      <label>保留主成分数</label>
+      <div class="ctrl-row">
+        <input type="range" id="nComp" min="1" max="4" step="1" value="2" oninput="upVal(this,'vComp')">
+        <span class="ctrl-value" id="vComp">2</span>
+      </div>
+    </div>
+    <button class="btn btn-primary" id="btnReal" onclick="runReal()">分析</button>
+  </div>
+
+  <div class="result-area" id="resultReal">
+    <div class="loading">👆 选择数据集后点击「分析」</div>
+  </div>
+
+  <div class="info-row" id="infoReal" style="display:none">
+    <div class="info-card">
+      <div class="label">原始维度</div>
+      <div class="value" id="infoFeatures">-</div>
+    </div>
+    <div class="info-card">
+      <div class="label">样本数</div>
+      <div class="value" id="infoSamples">-</div>
+    </div>
+    <div class="info-card">
+      <div class="label">保留主成分</div>
+      <div class="value" id="infoKept">-</div>
+    </div>
+    <div class="info-card">
+      <div class="label">累积方差解释</div>
+      <div class="value" id="infoVar">-</div>
+    </div>
+  </div>
+
+  <div class="concepts" style="margin-top:20px">
+    <div class="concept-card">
+      <h3>降维的意义</h3>
+      <p>Iris 数据有 4 个特征，但只用 2 个主成分就能解释约 96% 的方差。这意味着我们可以在低维空间中近乎无损地分析数据。</p>
+    </div>
+    <div class="concept-card red">
+      <h3>碎石图（Scree Plot）</h3>
+      <p>碎石图显示每个主成分的方差解释比例。当曲线出现明显"拐点"时，后面的主成分贡献很小，可以舍弃。</p>
+    </div>
+    <div class="concept-card green">
+      <h3>累积方差准则</h3>
+      <p>通常保留累积方差达到 <strong>85%-95%</strong> 的主成分即可。比如保留 k 个主成分能解释 90% 的方差，就说明丢失的信息很少。</p>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== Tab 2: Faces ==================== -->
+<div class="panel" id="panel2">
+  <div class="panel-title">人脸数据的 PCA 重建</div>
+  <div class="panel-desc">
+    64×64 的人脸图像有 4096 维。PCA 可以用少量主成分（"特征脸"）来表示和重建人脸。
+    调整主成分数量，观察重建质量的变化。
+  </div>
+
+  <div class="controls">
+    <div class="ctrl-group">
+      <label>主成分数量</label>
+      <div class="ctrl-row">
+        <input type="range" id="faceComp" min="1" max="40" step="1" value="10" oninput="upVal(this,'vFaceComp')">
+        <span class="ctrl-value" id="vFaceComp">10</span>
+      </div>
+    </div>
+    <div class="ctrl-group">
+      <label>选择人脸</label>
+      <div class="ctrl-row">
+        <input type="range" id="faceIdx" min="0" max="39" step="1" value="0" oninput="upVal(this,'vFaceIdx')">
+        <span class="ctrl-value" id="vFaceIdx">第1人</span>
+      </div>
+    </div>
+    <button class="btn btn-primary" id="btnFace" onclick="runFaces()">重建</button>
+  </div>
+
+  <!-- Compare: original vs mean vs reconstructed -->
+  <div class="compare-row" id="faceCompare" style="display:none">
+    <div class="compare-item">
+      <img id="imgOrig" src="" alt="original">
+      <div class="compare-label">原始人脸</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="compare-item">
+      <img id="imgMean" src="" alt="mean">
+      <div class="compare-label">平均脸</div>
+    </div>
+    <div class="arrow">→</div>
+    <div class="compare-item">
+      <img id="imgRecon" src="" alt="reconstructed">
+      <div class="compare-label" id="reconLabel">重建（10个主成分）</div>
+    </div>
+  </div>
+
+  <div class="info-row" id="infoFace" style="display:none">
+    <div class="info-card">
+      <div class="label">原始维度</div>
+      <div class="value">4096</div>
+    </div>
+    <div class="info-card">
+      <div class="label">使用主成分</div>
+      <div class="value" id="infoFaceComp">-</div>
+    </div>
+    <div class="info-card">
+      <div class="label">压缩率</div>
+      <div class="value" id="infoCompress">-</div>
+    </div>
+    <div class="info-card">
+      <div class="label">保留方差</div>
+      <div class="value" id="infoFaceVar">-</div>
+    </div>
+  </div>
+
+  <!-- Reconstruction steps -->
+  <div style="margin-top:20px">
+    <div class="panel-title" style="font-size:.95rem">逐步重建过程</div>
+    <div class="panel-desc">随着主成分增加，重建的人脸越来越清晰</div>
+    <div class="recon-row" id="reconSteps"></div>
+  </div>
+
+  <!-- Eigenfaces -->
+  <div style="margin-top:20px">
+    <div class="panel-title" style="font-size:.95rem">特征脸（Eigenfaces）</div>
+    <div class="panel-desc">PCA 提取的主成分可视化为"特征脸"，每张捕捉了人脸的一个变化模式</div>
+    <div class="eigen-row" id="eigenRow"></div>
+  </div>
+
+  <!-- Scree -->
+  <div class="result-area" id="faceScree" style="margin-top:16px"></div>
+
+  <div class="concepts" style="margin-top:20px">
+    <div class="concept-card">
+      <h3>特征脸是什么？</h3>
+      <p>特征脸是 PCA 在人脸数据上提取的主成分向量。每张特征脸代表人脸变化的一个"模式"（如光照、朝向、表情等），任何人脸都可以表示为这些特征脸的线性组合。</p>
+    </div>
+    <div class="concept-card red">
+      <h3>压缩与重建</h3>
+      <p>原始人脸需要 4096 个数值表示。使用 10 个主成分只需 10 个系数 + 10 张特征脸（共享），压缩率极高，但仍能保留主要面部特征。</p>
+    </div>
+    <div class="concept-card green">
+      <h3>试一试</h3>
+      <p>把主成分数从 1 拖到 40，观察重建质量的变化。大约需要多少个主成分才能"认出"一个人？大约需要多少个才接近原图？</p>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="footer">主成分分析（PCA）交互教学系统 · 基于 scikit-learn</div>
+
+<script>
+function switchTab(idx){
+  document.querySelectorAll('.tab').forEach(function(t,i){t.classList.toggle('active',i===idx)});
+  document.querySelectorAll('.panel').forEach(function(p,i){p.classList.toggle('active',i===idx)});
+}
+
+function upVal(el, spanId){
+  var v = el.value;
+  if(spanId==='vAngle') v+='°';
+  if(spanId==='vFaceIdx') v='第'+(parseInt(el.value)+1)+'人';
+  document.getElementById(spanId).textContent=v;
+}
+
+function updateMaxComp(){
+  var ds=document.getElementById('dataset').value;
+  var max=ds==='wine'?13:4;
+  var slider=document.getElementById('nComp');
+  slider.max=max;
+  if(parseInt(slider.value)>max) slider.value=max;
+  upVal(slider,'vComp');
+}
+
+async function apiPost(url,data,btnId,resultId){
+  var btn=document.getElementById(btnId);
+  btn.disabled=true; btn.textContent='计算中…';
+  try{
+    var resp=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+    var json=await resp.json();
+    btn.disabled=false; btn.textContent=btnId==='btn2d'?'生成 & 分析':btnId==='btnReal'?'分析':'重建';
+    return json;
+  }catch(e){
+    btn.disabled=false; btn.textContent='重试';
+    document.getElementById(resultId).innerHTML='<div class="loading">请求失败，请重试</div>';
+    return null;
+  }
+}
+
+async function run2D(){
+  var data={
+    spread_x:parseFloat(document.getElementById('spreadX').value),
+    spread_y:parseFloat(document.getElementById('spreadY').value),
+    angle:parseFloat(document.getElementById('angle').value),
+    n_points:parseInt(document.getElementById('nPoints').value),
+    seed:Math.floor(Math.random()*10000)
+  };
+  document.getElementById('result2d').innerHTML='<div class="loading">⏳ 正在计算…</div>';
+  var r=await apiPost('/api/2d_demo',data,'btn2d','result2d');
+  if(!r)return;
+  document.getElementById('result2d').innerHTML='<img src="data:image/png;base64,'+r.image+'" alt="PCA 2D">';
+}
+
+async function runReal(){
+  var data={
+    dataset:document.getElementById('dataset').value,
+    n_components:parseInt(document.getElementById('nComp').value)
+  };
+  document.getElementById('resultReal').innerHTML='<div class="loading">⏳ 正在计算…</div>';
+  var r=await apiPost('/api/real_data',data,'btnReal','resultReal');
+  if(!r)return;
+  document.getElementById('resultReal').innerHTML='<img src="data:image/png;base64,'+r.image+'" alt="PCA Real">';
+  document.getElementById('infoReal').style.display='flex';
+  document.getElementById('infoFeatures').textContent=r.n_features+'维';
+  document.getElementById('infoSamples').textContent=r.n_samples;
+  document.getElementById('infoKept').textContent=data.n_components;
+  document.getElementById('infoVar').textContent=r.total_variance+'%';
+}
+
+async function runFaces(){
+  var nc=parseInt(document.getElementById('faceComp').value);
+  var fi=parseInt(document.getElementById('faceIdx').value);
+  document.getElementById('faceScree').innerHTML='<div class="loading">⏳ 正在计算人脸重建…</div>';
+  var r=await apiPost('/api/faces',{n_components:nc,face_idx:fi},'btnFace','faceScree');
+  if(!r)return;
+
+  // Compare images
+  document.getElementById('faceCompare').style.display='flex';
+  document.getElementById('imgOrig').src='data:image/png;base64,'+r.original;
+  document.getElementById('imgMean').src='data:image/png;base64,'+r.mean_face;
+  document.getElementById('imgRecon').src='data:image/png;base64,'+r.reconstructed;
+  document.getElementById('reconLabel').textContent='重建（'+nc+'个主成分）';
+
+  // Info
+  document.getElementById('infoFace').style.display='flex';
+  document.getElementById('infoFaceComp').textContent=nc;
+  document.getElementById('infoCompress').textContent=(4096/nc).toFixed(0)+'×';
+  document.getElementById('infoFaceVar').textContent=r.total_variance+'%';
+
+  // Recon steps
+  var stepsHtml='';
+  for(var i=0;i<r.recon_steps.length;i++){
+    var s=r.recon_steps[i];
+    stepsHtml+='<div class="recon-item"><img src="data:image/png;base64,'+s.image+'" alt="n='+s.n+'"><div class="recon-label">'+s.n+' 个主成分</div><div class="recon-var">'+s.variance+'%</div></div>';
+  }
+  document.getElementById('reconSteps').innerHTML=stepsHtml;
+
+  // Eigenfaces
+  var eigenHtml='';
+  for(var i=0;i<r.eigenfaces.length;i++){
+    eigenHtml+='<div class="eigen-item"><img src="data:image/png;base64,'+r.eigenfaces[i]+'" alt="EF'+(i+1)+'"><div class="eigen-label">PC'+(i+1)+'</div></div>';
+  }
+  document.getElementById('eigenRow').innerHTML=eigenHtml;
+
+  // Scree
+  document.getElementById('faceScree').innerHTML='<img src="data:image/png;base64,'+r.scree+'" alt="Scree" style="max-width:600px">';
+}
+</script>
+</body>
+</html>
